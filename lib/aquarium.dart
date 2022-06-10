@@ -1,3 +1,5 @@
+import 'package:fish_population/models/fish_model.dart';
+
 import 'animals/fish.dart';
 import 'fish_type.dart';
 import 'actions/aquarium_action.dart';
@@ -5,7 +7,10 @@ import 'animals/shark.dart';
 import 'utils/utils.dart';
 import 'utils/hive_util.dart';
 
+const String fishStoreName = "fishStore";
+
 class Aquarium with Util, HiveUtil implements AquariumInterface {
+  List<FishModel> fishModel = [];
   Map<String, Fish> listFish = {};
   List<String> listFishMale = [];
   List<String> listFishFemale = [];
