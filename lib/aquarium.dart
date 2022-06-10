@@ -80,6 +80,7 @@ class Aquarium with Util, HiveUtil implements AquariumInterface {
     } else {
       return random.nextInt(30) + 10;
     }
+    print('test');
   }
 
   @override
