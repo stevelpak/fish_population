@@ -1,0 +1,1 @@
+enum FishType { fishMale, fishFemale }
