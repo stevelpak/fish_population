@@ -1,6 +1,21 @@
+import 'package:hive/hive.dart';
+part 'fish_model.g.dart';
+
+@HiveType(typeId: 0)
 class FishModel {
-  String? name, deadReason, mummy, daddy;
-  int? lifeTime, countChoose;
+  @HiveField(0)
+  String? name;
+  @HiveField(1)
+  String? deadReason;
+  @HiveField(2)
+  String? mummy;
+  @HiveField(3)
+  String? daddy;
+  @HiveField(4)
+  int? lifeTime;
+  @HiveField(5)
+  int? countChoose;
+  @HiveField(6)
   DateTime? birthday;
 
   FishModel(
