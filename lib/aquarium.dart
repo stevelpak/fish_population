@@ -3,7 +3,7 @@ import 'fish_type.dart';
 import 'actions/aquarium_action.dart';
 import 'animals/shark.dart';
 import 'utils/utils.dart';
-import 'utils/hiveUtil.dart';
+import 'utils/hive_util.dart';
 
 class Aquarium with Util, HiveUtil implements AquariumInterface {
   Map<String, Fish> listFish = {};
