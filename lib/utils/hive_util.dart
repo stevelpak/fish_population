@@ -2,25 +2,26 @@ import 'package:hive/hive.dart';
 
 mixin HiveUtil {
   Future addAllBox<T>(String boxName, Iterable<T> value) async {
-    Box<T> box = await isCheckOpenBox<T>(boxName);
+    LazyBox<T> box = await isCheckOpenBox<T>(boxName);
     await box.addAll(value);
+    box.close();
   }
 
-  Future<Box<T>> getAllBox<T>(String boxName) async {
-    Box<T> box = await isCheckOpenBox<T>(boxName);
-    return Future<Box<T>>.value(box);
+  Future<LazyBox<T>> getAllBox<T>(String boxName) async {
+    LazyBox<T> box = await isCheckOpenBox<T>(boxName);
+    return Future<LazyBox<T>>.value(box);
   }
 
-  Future<Box<T>> isCheckOpenBox<T>(String boxName) async {
+  Future<LazyBox<T>> isCheckOpenBox<T>(String boxName) async {
     if (Hive.isBoxOpen(boxName)) {
-      return Hive.box<T>(boxName);
+      return Hive.lazyBox<T>(boxName);
     } else {
-      return Future.value(Hive.openBox<T>(boxName));
+      return Future.value(Hive.openLazyBox<T>(boxName));
     }
   }
 
   Future<bool> isEmptyBox<T>(String boxName) async {
-    Box<T> box = await isCheckOpenBox<T>(boxName);
+    LazyBox<T> box = await isCheckOpenBox<T>(boxName);
     return Future<bool>.value(box.isEmpty);
   }
 }

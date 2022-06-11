@@ -8,12 +8,15 @@ import 'utils/utils.dart';
 import 'utils/hive_util.dart';
 
 const String fishStoreName = "fishStore";
+const String logBoxName = "logStore";
+DateTime? birthday;
 
 class Aquarium with Util, HiveUtil implements AquariumInterface {
   List<FishModel> fishModel = [];
   Map<String, Fish> listFish = {};
   List<String> listFishMale = [];
   List<String> listFishFemale = [];
+  List<String> logs = [];
   int countDead = 0;
 
   onStart() {
@@ -36,11 +39,13 @@ class Aquarium with Util, HiveUtil implements AquariumInterface {
       String chosenFishName = (type == FishType.fishMale)
           ? randomFish(listFishFemale)
           : randomFish(listFishMale);
-      printRequest(name, chosenFishName);
+      print(printRequest(name, chosenFishName));
+      logs.add(printRequest(name, chosenFishName));
       Fish? chosenFish = listFish[chosenFishName];
 
       if (chosenFish!.onWill()) {
-        printAccept(chosenFishName);
+        print(printAccept(chosenFishName));
+        logs.add(printAccept(chosenFishName));
 
         FishType babyType = generateType();
         String newFishName = generateName(name, chosenFishName);
@@ -50,10 +55,16 @@ class Aquarium with Util, HiveUtil implements AquariumInterface {
         babyType == FishType.fishMale
             ? listFishMale.add(newFishName)
             : listFishFemale.add(newFishName);
-        printBirth(babyType, newFishName);
-        printAll(getSizeFish(), getSizeFishA());
+        birthday = DateTime.now();
+
+        print(printBirth(babyType, newFishName));
+        logs.add(printBirth(babyType, newFishName));
+
+        print(printAll(getSizeFish(), getSizeFishA()));
+        logs.add(printAll(getSizeFish(), getSizeFishA()));
       } else {
-        printDecline(chosenFishName);
+        print(printDecline(chosenFishName));
+        logs.add(printDecline(chosenFishName));
       }
     } catch (e) {
       printError(e);
@@ -65,18 +76,30 @@ class Aquarium with Util, HiveUtil implements AquariumInterface {
   }
 
   @override
-  onDead(FishType type, String name, String reason) {
+  onDead(FishType type, String name, String reason) async {
     type == FishType.fishMale
         ? listFishMale.remove(name)
         : listFishFemale.remove(name);
 
     if (getSizeFishA() == 0 || getSizeFishB() == 0) {
-      printExit();
+      print(printExit());
+      logs.add(printExit());
     }
 
+    var modelFish = FishModel(
+        name: name,
+        deadReason: reason,
+        mummy: mum,
+        daddy: dad,
+        birthday: birthday);
+
+    fishModel.add(modelFish);
+
     listFish.remove(name);
-    printDead(name, reason);
-    printAll(getSizeFish(), getSizeFishA());
+    print(printDead(name, reason));
+    logs.add(printDead(name, reason));
+    print(printAll(getSizeFish(), getSizeFishA()));
+    logs.add(printAll(getSizeFish(), getSizeFishA()));
   }
 
   int generateLifeTime() {
@@ -89,6 +112,15 @@ class Aquarium with Util, HiveUtil implements AquariumInterface {
 
   @override
   getSizeFish() {
+    if (logs.length > 1000) {
+      lazyBoxFish(logs);
+      logs.clear();
+    }
+
+    if (fishModel.length > 20) {
+      addAllBox(fishStoreName, fishModel);
+      fishModel.clear();
+    }
     return listFish.length;
   }
 
@@ -115,5 +147,9 @@ class Aquarium with Util, HiveUtil implements AquariumInterface {
   @override
   getSizeFishB() {
     return listFishFemale.length;
+  }
+
+  lazyBoxFish(List<String> log) {
+    addAllBox(logBoxName, logs);
   }
 }
